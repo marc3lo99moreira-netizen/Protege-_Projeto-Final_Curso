@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protege+ | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&family=Instrument+Serif&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'atividades/css/styles.css' %}">
+    
+</head>
+<body>
+
+    <header class="header-main-dashboard">
+        <div class="header-pill-container">
+            <div class="header-pill-dashboard">
+                <a href="{% url 'atividades:home2' %}" class="brand">
+                    <div class="brand-icon">🛡️</div>
+                    <span class="brand-name">Protege+</span>
+                </a>
+
+                <nav class="header-nav">
+                    <div class="lang-pill">
+                        <button class="lang-btn active">
+                            <img src="{% static 'users/images/portugal.png' %}" alt="PT"> PT
+                        </button>
+                        <span class="lang-divider">|</span>
+                        <button class="lang-btn">
+                            <img src="{% static 'users/images/inglaterra.png' %}" alt="EN"> EN
+                        </button>
+                    </div>
+                    
+                    <a href="{% url 'sobrenos' %}" class="nav-link-text">Sobre Nós</a>
+                    
+                    <div class="auth-buttons">
+                        <a href="{% url 'atividades:quiz' %}" class="btn-dashboard">QUIZ</a>
+                        <a href="{% url 'atividades:simulador' %}" class="btn-dashboard">SIMULADOR</a>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="profile-area">
+                <button onclick="PerfilMenu()" type="button" class="btn-avatar-trigger">
+                    <img src="{% static 'atividades/images/avatar_perfil.png' %}" alt="Perfil">
+                </button>
+
+                <div id="perfil-menu" class="dropdown-menu hidden">
+                    <div class="dropdown-header">
+                        <p class="dropdown-label">UTILIZADOR</p>
+                        <h3 class="dropdown-username">{{ user.username }}</h3>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li><a href="{% url 'perfil' %}" class="dropdown-item">👤 Ver Perfil</a></li>
+                        <li><a href="#" class="dropdown-item">📜 Histórico</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'home' %}" class="dropdown-item exit">🚪 Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="hero-dashboard">
+        <div class="hero-text">
+            <h1 class="serif-title">
+                Olá {{ user.username|slice:":10" }}, <br>
+                Bem Vindo ao Protege+ !
+            </h1>
+            <p class="hero-subtitle">
+                Aqui vais melhorar os teus conhecimentos <br>
+                em phishing e segurança digital.
+            </p>
+        </div>
+        <div class="hero-image-container">
+            <img src="{% static 'atividades/images/Documentos.png' %}" alt="Ilustração">
+        </div>
+    </main>
+
+    <footer class="footer-fixed">
+        <div id="daltonismo-menu" class="accessibility-menu hidden">
+            <h3 class="menu-title">Acessibilidade</h3>
+            <div class="menu-list">
+                <button onclick="setDaltonismo('normal')" class="menu-btn">Padrão</button>
+                <button onclick="setDaltonismo('protanopia')" class="menu-btn">Protanopia</button>
+                <button onclick="setDaltonismo('deuteranopia')" class="menu-btn">Deuteranopia</button>
+                <button onclick="setDaltonismo('tritanopia')" class="menu-btn">Tritanopia</button>
+                <button onclick="setDaltonismo('achromatopsia')" class="menu-btn">P&B</button>
+            </div>
+        </div>
+
+        <div id="contraste-menu" class="accessibility-menu hidden">
+            <h3 class="menu-title">Contraste</h3>
+            <div class="menu-list">
+                <button onclick="setContraste('normal')" class="menu-btn">Padrão</button>
+                <button onclick="setContraste('alto-contraste')" class="menu-btn">Alto Contraste</button>
+                <button onclick="setContraste('contraste-invertido')" class="menu-btn">Invertido</button>
+                <button onclick="setContraste('modo-escuro')" class="menu-btn">Modo Escuro</button>
+            </div>
+        </div>
+
+        <div class="accessibility-pill">
+            <button onclick="toggleDaltonismoMenu()" class="access-icon">
+                <img src="{% static 'users/images/daltonismo.png' %}" style="width:22px;">
+            </button>
+            <button onclick="toggleContrasteMenu()" class="access-icon">
+                <img src="{% static 'users/images/contraste.png' %}" style="width:22px;">
+            </button>
+            <span class="help-label">PRECISAS DE AJUDA?</span>
+        </div>
+    </footer>
+
+</body>
+</html>

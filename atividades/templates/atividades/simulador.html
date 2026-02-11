@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Phishing | Protege+</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+</head>
+<body class="bg-custom-light min-h-screen flex flex-col items-center px-4">
+
+    <header class="w-full p-8 flex justify-between items-center">
+        <a href="{% url 'atividades:home2' %}" class="bg-white/40 backdrop-blur-md px-6 py-3 rounded-full font-black italic text-[#254d1a] border border-white/50 shadow-lg">← Sair</a>
+        <div class="text-[#254d1a] font-black italic bg-white/30 px-6 py-2 rounded-full border border-white/40">Cenário {{ numero }} de 2</div>
+    </header>
+
+    <main class="w-full max-w-5xl mt-10">
+        <div class="bg-[#333] p-4 rounded-t-[30px] border-x-8 border-t-8 border-gray-600 shadow-2xl">
+            <div class="bg-gray-200 rounded-t-xl p-3 flex items-center gap-4">
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                </div>
+                <div class="bg-white rounded-lg px-4 py-1 flex-1 text-sm text-gray-500 italic truncate">
+                    https://mail.protege-mais.pt/inbox/{{ email.id }}
+                </div>
+            </div>
+
+            <div class="bg-white min-h-[400px] p-10 font-sans text-gray-800">
+                <div class="border-b pb-4 mb-6">
+                    <p><strong>De:</strong> {{ email.remetente }}</p>
+                    <p><strong>Assunto:</strong> <span class="text-red-600 font-bold uppercase">{{ email.assunto }}</span></p>
+                </div>
+                
+                <div class="text-xl leading-relaxed">
+                    {{ email.corpo|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-700 h-6 w-[105%] -ml-[2.5%] rounded-b-xl shadow-xl"></div>
+    </main>
+
+    <div id="info-box" class="hidden fixed bottom-12 left-1/2 -translate-x-1/2 bg-white p-6 rounded-[30px] shadow-2xl border-4 border-[#20c214] max-w-md text-center z-[100] animate-bounce">
+        <p id="info-text" class="font-bold italic text-gray-700"></p>
+    </div>
+
+    <div class="mt-10">
+        <a href="" class="bg-[#254d1a] text-white px-12 py-4 rounded-full font-black italic text-xl hover:bg-black transition shadow-lg uppercase">
+            Próximo E-mail →
+        </a>
+    </div>
+
+    <footer class="fixed bottom-8 right-8 z-50 flex flex-col items-end pointer-events-none">
+        <div id="daltonismo-menu" class="hidden mb-4 bg-white/90 backdrop-blur-xl p-6 rounded-[30px] shadow-2xl border border-white/50 w-64 pointer-events-auto">
+            <h3 class="text-[#254d1a] font-black italic uppercase text-sm mb-4 border-b border-[#254d1a]/10 pb-2">Acessibilidade</h3>
+            <ul class="space-y-2">
+                <li><button onclick="setDaltonismo('normal')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Padrão</button></li>
+                <li><button onclick="setDaltonismo('protanopia')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Protanopia</button></li>
+                <li><button onclick="setDaltonismo('deuteranopia')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Deuteranopia</button></li>
+                <li><button onclick="setDaltonismo('tritanopia')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Tritanopia</button></li>
+                <li><button onclick="setDaltonismo('achromatopsia')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">P&B</button></li>
+            </ul>
+        </div>
+
+        <div id="contraste-menu" class="hidden mb-4 bg-white/90 backdrop-blur-xl p-6 rounded-[30px] shadow-2xl border border-white/50 w-64 pointer-events-auto">
+            <h3 class="text-[#254d1a] font-black italic uppercase text-sm mb-4 border-b border-[#254d1a]/10 pb-2">Contraste</h3>
+            <ul class="space-y-2">
+                <li><button onclick="setContraste('normal')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Padrão</button></li>
+                <li><button onclick="setContraste('alto-contraste')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Alto Contraste</button></li>
+                <li><button onclick="setContraste('contraste-invertido')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Invertido</button></li>
+                <li><button onclick="setContraste('modo-escuro')" class="w-full text-left px-4 py-2 rounded-xl hover:bg-[#76A361]/20 font-bold text-[#254d1a] transition italic">Modo Escuro</button></li>
+            </ul>
+        </div>
+
+        <div class="flex items-center gap-3 bg-white/30 backdrop-blur-md p-2 rounded-full border border-white/50 shadow-lg pointer-events-auto">
+            <button onclick="toggleDaltonismoMenu()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden hover:scale-110 transition-all">
+                <img src="{% static 'users/images/daltonismo.png' %}" class="w-full h-full object-cover">
+            </button>
+            <button onclick="toggleContrasteMenu()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden hover:scale-110 transition-all">
+                <img src="{% static 'users/images/contraste.png' %}" class="w-full h-full object-cover">
+            </button>
+        </div>
+    </footer>
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+    {% if mostrar_popup %}
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div class="bg-white rounded-[40px] p-8 max-w-sm w-full shadow-2xl text-center border-4 {% if esta_correto %} border-green-500 {% else %} border-red-500 {% endif %}">
+                
+                <div class="text-6xl mb-4">
+                    {% if esta_correto %} ✅ {% else %} ❌ {% endif %}
+                </div>
+                
+                <h2 class="text-2xl font-black italic text-[#254d1a] mb-4 uppercase">
+                    {% if esta_correto %} Boa! Estás no caminho certo. {% else %} Ops! Não foi desta. {% endif %}
+                </h2>
+                
+                <p class="text-gray-600 font-bold italic mb-8 leading-relaxed">
+                    {{ explicacao }}
+                </p>
+
+                <a href="{% url 'proximo_passo' %}" 
+                class="block w-full bg-[#254d1a] text-white py-4 rounded-full font-black italic uppercase hover:scale-105 transition shadow-lg">
+                    Continuar
+                </a>
+            </div>
+        </div>
+        {% endif %}
+</body>
+</html>

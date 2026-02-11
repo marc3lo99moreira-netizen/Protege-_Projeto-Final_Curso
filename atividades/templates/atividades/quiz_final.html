@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado Final | Protege+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'atividades/css/styles.css' %}">
+    
+</head>
+<body>
+
+    <header class="rf-header">
+        <div class="rf-avatar">
+            {{ user.username|slice:":1"|upper }}
+        </div>
+    </header>
+
+    <main class="rf-main">
+        <h1 class="rf-titulo">Parabéns!</h1>
+        
+        <div class="rf-card">
+            <div class="rf-badge-escudo">🛡️</div>
+
+            <p class="rf-label">O teu resultado foi:</p>
+            
+            <div class="rf-flex-score">
+                <span class="rf-score-num">{{ pontuacao }}</span>
+                <span class="rf-score-total">/ {{ Total }}</span>
+            </div>
+
+            <div class="rf-feedback">
+                <p>
+                    {% if pontuacao == Total %}
+                        És um mestre da Cibersegurança! Estás totalmente protegido. 🛡️
+                    {% elif pontuacao >= 4 %}
+                        Muito bem! Tens bons conhecimentos de segurança. 👍
+                    {% else %}
+                        Bom esforço! Continua a aprender para ficares mais seguro. 🔎
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="rf-btn-group">
+            <a href="{% url 'atividades:quiz' %}" class="rf-btn-repeat">
+                Repetir Quiz
+            </a>
+            <a href="{% url 'atividades:home2' %}" class="rf-link-home">
+                Voltar ao Início
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>

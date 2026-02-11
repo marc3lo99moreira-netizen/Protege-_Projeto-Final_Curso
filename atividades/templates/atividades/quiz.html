@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz | Protege+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'atividades/css/styles.css' %}">
+</head>
+<body>
+
+    <header class="header-quiz">
+        <div class="pointer-events-auto">
+            <a href="{% url 'atividades:home2' %}" class="btn-exit">
+                <span>←</span> Sair do Quiz
+            </a>
+        </div>
+
+        <div class="pointer-events-auto">
+            <a href="{% url 'perfil' %}" class="user-badge">
+                <div class="user-badge-inner">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-line"></div>
+        {% for i in "1234567" %}
+            <div class="progress-dot 
+                {% if forloop.counter < numero %} completed 
+                {% elif forloop.counter == numero %} active 
+                {% endif %}">
+                {% if forloop.counter == numero %}
+                    <div class="ping-active"></div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <main class="quiz-main">
+        <div class="quiz-card">
+            
+            <div class="question-box">
+                <h2>{{ pergunta.p }}</h2>
+            </div>
+
+            <form method="POST" class="options-grid">
+                {% csrf_token %}
+                {% for opcao in pergunta.o %}
+                <button type="submit" name="resposta" value="{{ opcao }}" class="option-btn">
+                    <div class="option-letter">
+                        {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}
+                    </div>
+                    <span class="option-text">{{ opcao }}</span>
+                </button>
+                {% endfor %}
+            </form>
+
+            <div class="counter-badge">
+                QUESTÃO {{ numero }} DE 7
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-fixed">
+        <div id="daltonismo-menu" class="access-menu hidden">
+            <h3>Acessibilidade</h3>
+            <button onclick="setDaltonismo('normal')" class="menu-btn">Padrão</button>
+            <button onclick="setDaltonismo('protanopia')" class="menu-btn">Protanopia</button>
+            <button onclick="setDaltonismo('deuteranopia')" class="menu-btn">Deuteranopia</button>
+            <button onclick="setDaltonismo('tritanopia')" class="menu-btn">Tritanopia</button>
+            <button onclick="setDaltonismo('achromatopsia')" class="menu-btn">P&B</button>
+        </div>
+
+        <div id="contraste-menu" class="access-menu hidden">
+            <h3>Contraste</h3>
+            <button onclick="setContraste('normal')" class="menu-btn">Padrão</button>
+            <button onclick="setContraste('alto-contraste')" class="menu-btn">Alto Contraste</button>
+            <button onclick="setContraste('contraste-invertido')" class="menu-btn">Invertido</button>
+            <button onclick="setContraste('modo-escuro')" class="menu-btn">Modo Escuro</button>
+        </div>
+
+        <div class="access-pill">
+            <button onclick="toggleDaltonismoMenu()" class="access-btn">
+                <img src="{% static 'users/images/daltonismo.png' %}" alt="Daltonismo" style="width:20px;">
+            </button>
+            <button onclick="toggleContrasteMenu()" class="access-btn">
+                <img src="{% static 'users/images/contraste.png' %}" alt="Contraste" style="width:20px;">
+            </button>
+        </div>
+    </footer>
+
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+
+    {% if mostrar_popup %}
+    <div class="overlay">
+        <div class="popup-card {% if esta_correto %} popup-correto {% else %} popup-errado {% endif %}">
+            <div class="popup-icon">
+                {% if esta_correto %} ✅ {% else %} ❌ {% endif %}
+            </div>
+            
+            <h2 class="popup-title">
+                {% if esta_correto %} Boa! Estás no caminho certo. {% else %} Ops! Não foi desta. {% endif %}
+            </h2>
+            
+            <p class="popup-text">{{ explicacao }}</p>
+
+            <a href="{% url 'atividades:proximo_passo' %}" class="btn-continue">
+                {% if numero == 7 %} Ver Resultado Final {% else %} Continuar {% endif %}</a>
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>

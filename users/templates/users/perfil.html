@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil | Protege+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+    
+</head>
+<body class="perf-view-ativa">
+
+    <header class="perf-topo-nav">
+        <a href="{% url 'atividades:home2' %}" class="perf-btn-retroceder">
+            <span>←</span> Voltar
+        </a>
+    </header>
+
+    <main class="perf-corpo-central">
+        <section class="perf-cartao-id">
+            <div class="perf-moldura-avatar">
+                <img src="{% static 'users/images/avatar_perfil.png' %}" alt="Avatar">
+            </div>
+            
+            <h2 class="perf-nome-utilizador">
+                {{ user.username }}
+                <span class="perf-detalhes-texto">{{ user.email }}</span>
+                <span class="perf-detalhes-texto">{{ user.perfil.instituicao }} • {{ user.perfil.ano_letivo }}º ano</span>
+            </h2>
+        </section>
+
+        <section class="perf-grid-estatisticas">
+            <div class="perf-bloco-metrica">
+                <h3>Pontos Totais</h3>
+                <span class="perf-valor-num">1.250</span>
+            </div>
+
+            <div class="perf-bloco-metrica">
+                <h3>Quizzes</h3>
+                <span class="perf-valor-num">8</span>
+            </div>
+
+            <div class="perf-bloco-metrica">
+                <h3>Simuladores</h3>
+                <span class="perf-valor-num">3</span>
+            </div>
+
+            <div class="perf-bloco-metrica">
+                <h3>Precisão</h3>
+                <span class="perf-valor-num">92%</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="perf-area-ajuda">
+        <div id="daltonismo-menu" class="perf-painel-opcoes hidden">
+            <button onclick="setDaltonismo('normal')" class="perf-btn-opcao">Padrão</button>
+            <button onclick="setDaltonismo('protanopia')" class="perf-btn-opcao">Protanopia</button>
+            <button onclick="setDaltonismo('deuteranopia')" class="perf-btn-opcao">Deuteranopia</button>
+            <button onclick="setDaltonismo('tritanopia')" class="perf-btn-opcao">Tritanopia</button>
+            <button onclick="setDaltonismo('achromatopsia')" class="perf-btn-opcao">Preto e Branco</button>
+        </div>
+
+        <div id="contraste-menu" class="perf-painel-opcoes hidden">
+            <button onclick="setContraste('normal')" class="perf-btn-opcao">Padrão</button>
+            <button onclick="setContraste('alto-contraste')" class="perf-btn-opcao">Alto Contraste</button>
+            <button onclick="setContraste('modo-escuro')" class="perf-btn-opcao">Modo Escuro</button>
+        </div>
+
+        <div class="perf-bolha-gatilho">
+            <button onclick="toggleDaltonismoMenu()" class="perf-btn-redondo">
+                <img src="{% static 'users/images/daltonismo.png' %}" alt="Cores">
+            </button>
+            <button onclick="toggleContrasteMenu()" class="perf-btn-redondo">
+                <img src="{% static 'users/images/contraste.png' %}" alt="Contraste">
+            </button>
+        </div>
+    </footer>
+
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+</body>
+</html>

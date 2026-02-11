@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protege+ | Cibersegurança</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,700;1,900&family=Instrument+Serif&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+    
+</head>
+<body class="bg-home">
+
+    <header class="header-main">
+        <div class="header-pill">
+            <div class="header-left">
+                <a href="{% url 'home' %}" class="brand">
+                    <div class="brand-icon">🛡️</div>
+                    <span class="brand-name">Protege+</span>
+                </a>
+            </div>
+
+            <nav class="header-nav">
+                <div class="lang-pill">
+                    <button class="lang-btn active">
+                        <img src="{% static 'users/images/portugal.png' %}" alt="PT"> PT
+                    </button>
+                    <span class="lang-divider">|</span>
+                    <button class="lang-btn">
+                        <img src="{% static 'users/images/inglaterra.png' %}" alt="EN"> EN
+                    </button>
+                </div>
+                
+                <a href="{% url 'sobrenos' %}" class="nav-link-text">Sobre Nós</a>
+                
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}" class="btn-entrar">ENTRAR</a>
+                    <a href="{% url 'registar' %}" class="btn-registar">REGISTAR</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="hero">
+        <div class="hero-container">
+            <div class="hero-text">
+                <h1 class="serif-title">APRENDE A <br> PROTEGER-TE.</h1>
+                <p class="hero-subtitle">Testa os teus conhecimentos com os nossos simuladores de phishing e quizzes interativos.</p>
+                <a href="{% url 'login' %}" class="btn-cta">COMEÇAR AGORA</a>
+            </div>
+
+            <div class="hero-image-box">
+                <div class="image-frame">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800" alt="Cibersegurança">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-fixed">
+    <div id="daltonismo-menu" class="accessibility-menu hidden">
+        <h3 class="menu-title">Acessibilidade</h3>
+        <div class="menu-list">
+            <button onclick="setDaltonismo('normal')" class="menu-btn">Padrão</button>
+            <button onclick="setDaltonismo('protanopia')" class="menu-btn">Protanopia</button>
+            <button onclick="setDaltonismo('deuteranopia')" class="menu-btn">Deuteranopia</button>
+            <button onclick="setDaltonismo('tritanopia')" class="menu-btn">Tritanopia</button>
+            <button onclick="setDaltonismo('achromatopsia')" class="menu-btn">P&B</button>
+        </div>
+    </div>
+
+    <div id="contraste-menu" class="accessibility-menu hidden">
+        <h3 class="menu-title">Contraste</h3>
+        <div class="menu-list">
+            <button onclick="setContraste('normal')" class="menu-btn">Padrão</button>
+            <button onclick="setContraste('alto-contraste')" class="menu-btn">Alto Contraste</button>
+            <button onclick="setContraste('contraste-invertido')" class="menu-btn">Invertido</button>
+            <button onclick="setContraste('modo-escuro')" class="menu-btn">Modo Escuro</button>
+        </div>
+    </div>
+
+    <div class="accessibility-pill">
+        <button onclick="toggleDaltonismoMenu()" class="access-icon">
+            <img src="{% static 'users/images/daltonismo.png' %}" style="width:22px;">
+        </button>
+        <button onclick="toggleContrasteMenu()" class="access-icon">
+            <img src="{% static 'users/images/contraste.png' %}" style="width:22px;">
+        </button>
+        <span class="help-label">PRECISAS DE AJUDA?</span>
+    </div>
+    </footer>
+
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+</body>
+</html>

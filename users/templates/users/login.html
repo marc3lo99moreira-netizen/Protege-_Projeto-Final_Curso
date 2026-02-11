@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso | Protege+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+    
+</head>
+<body class="view-autenticacao">
+
+    <div class="wrapper-split">
+        <aside class="ala-lateral-esquerda">
+            <a href="{% url 'home' %}" class="link-logotipo">
+                <div class="emblema-marca">🛡️</div>
+                <span class="nome-marca-estilizado">Protege+</span>
+            </a>
+            
+            <div class="zona-personagem">
+                <img src="{% static 'users/images/avatar_perfil.png' %}" alt="Protege+" class="img-personagem">
+            </div>
+            <div></div> </aside>
+
+        <main class="ala-principal-direita">
+            <a href="{% url 'home' %}" class="seta-retroceder">←</a>
+
+            <div class="modulo-login">
+                <h2 class="cabecalho-form">Acesso à Plataforma</h2>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="notificacao-erro">
+                        Verifica o teu utilizador e palavra-passe.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="agrupamento-input">
+                        <label class="etiqueta-input">Nome de Utilizador</label>
+                        <input type="text" name="username" placeholder="ex: joao_seguro" class="caixa-texto-protege">
+                    </div>
+
+                    <div class="agrupamento-input">
+                        <label class="etiqueta-input">Palavra-passe</label>
+                        <input type="password" name="password" placeholder="••••••••" class="caixa-texto-protege">
+                    </div>
+
+                    <button type="submit" class="botao-acao-principal">Entrar Agora</button>
+                </form>
+
+                <div class="navegacao-secundaria">
+                    <a href="#" class="atalho-link">Esqueci-me da senha</a>
+                    <a href="{% url 'registar' %}" class="atalho-link">Criar conta gratuita</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="painel-acessibilidade-fixo">
+        <div id="daltonismo-menu" class="menu-suspenso hidden">
+            <button onclick="setDaltonismo('normal')" class="btn-escolha">Normal</button>
+            <button onclick="setDaltonismo('protanopia')" class="btn-escolha">Protanopia</button>
+            <button onclick="setDaltonismo('deuteranopia')" class="btn-escolha">Deuteranopia</button>
+            <button onclick="setDaltonismo('tritanopia')" class="btn-escolha">Tritanopia</button>
+            <button onclick="setDaltonismo('achromatopsia')" class="btn-escolha">Preto e Branco</button>
+        </div>
+
+        <div id="contraste-menu" class="menu-suspenso hidden">
+            <button onclick="setContraste('normal')" class="btn-escolha">Padrão</button>
+            <button onclick="setContraste('alto-contraste')" class="btn-escolha">Alto Contraste</button>
+            <button onclick="setContraste('modo-escuro')" class="btn-escolha">Modo Escuro</button>
+        </div>
+
+        <div class="bolha-opcoes">
+            <button onclick="toggleDaltonismoMenu()" class="botao-circular-acesso">
+                <img src="{% static 'users/images/daltonismo.png' %}" alt="Cores">
+            </button>
+            <button onclick="toggleContrasteMenu()" class="botao-circular-acesso">
+                <img src="{% static 'users/images/contraste.png' %}" alt="Contraste">
+            </button>
+        </div>
+    </footer>
+
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+</body>
+</html>

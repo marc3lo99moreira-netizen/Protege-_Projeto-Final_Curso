@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protege+ | Sobre Nós</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&family=Instrument+Serif&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+</head>
+<body>
+
+    <header class="header-main">
+        <div class="header-pill">
+            <a href="{% url 'home' %}" class="brand">
+                <div class="brand-icon">🛡️</div>
+                <span class="brand-name">Protege+</span>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="{% url 'home' %}" class="nav-link">Início</a>
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}" class="btn-entrar">Entrar</a>
+                    <a href="{% url 'registar' %}" class="btn-registar">Registar</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="content-grid">
+            
+            <div class="about-text">
+                <h1 class="serif-title">Quem <br> Somos?</h1>
+                <p>
+                    O Protege+ nasceu para ajudar estudantes a navegar no mundo digital com segurança. Focamo-nos em ensinar cibersegurança de forma simples, prática e direta.
+                </p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-inner">
+                    <h2>Envia uma mensagem</h2>
+                    
+                    <form action="#" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <input type="text" name="nome" required placeholder="Teu nome" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" required placeholder="Teu email" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Mensagem</label>
+                            <textarea name="mensagem" rows="3" required placeholder="Como podemos ajudar?" class="form-textarea"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-submit">Enviar agora</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer-main">
+        <div class="email-pill">
+            <span class="icon">✉️</span>
+            <span class="text">ajuda@protegemais.pt</span>
+        </div>
+    </footer>
+
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+</body>
+</html>
