@@ -4,12 +4,49 @@ from django.contrib.auth.models import User
 
 
 class Perfil(models.Model):
+    OPCOES_DALTONISMO = [
+        ('normal', 'Padrão'),
+        ('protanopia', 'Protanopia'),
+        ('deuteranopia', 'Deuteranopia'),
+        ('tritanopia', 'Tritanopia'),
+        ('achromatopsia', 'P&B'),
+    ]
+    CONTRASTE_CHOICES = [
+        ('normal', 'Padrão'),
+        ('alto-contraste', 'Alto Contraste'),
+        ('contraste-invertido', 'Invertido'),
+        ('modo-escuro', 'Modo Escuro'),
+    ]
+    LINGUA_CHOICES = [
+        ('pt', 'Português'),
+        ('en', 'English'),
+    ]
+    id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
-
     instituicao = models.CharField(max_length=200)
-    idade = models.IntegerField()
+    idade = models.PositiveIntegerField()
     ano_letivo = models.CharField(max_length=50)
+    nivel_quiz = models.IntegerField(default=1)
+    quizzes_realizados = models.PositiveIntegerField(default=0)
+    soma_percentagens = models.FloatField(default=0.0)
+
+    pontuacao_total_quiz = models.IntegerField(default=0)
+    nivel_simulador = models.IntegerField(default=1)
+    simuladores_realizados = models.PositiveIntegerField(default=0)
+    pontuacao_total_simulador = models.IntegerField(default=0)
+    filtro_daltonismo = models.CharField(max_length=20, choices=OPCOES_DALTONISMO, default='normal')
+    filtro_contraste = models.CharField(max_length=20, choices=CONTRASTE_CHOICES, default='normal')
+    lingua = models.CharField(max_length=20, choices=LINGUA_CHOICES, default='pt')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def precisao_media(self):
+        if self.quizzes_realizados == 0:
+            return 0
+        return round(self.soma_percentagens / self.quizzes_realizados, 1)
 
     def __str__(self):
         return f"Perfil de {self.user.username}"
+
+

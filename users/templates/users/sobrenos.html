@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protege+ | Sobre Nós</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&family=Instrument+Serif&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/sobrenos.css' %}">
 </head>
-<body>
+<body class="{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="header-main">
         <div class="header-pill">
@@ -16,13 +16,16 @@
                 <div class="brand-icon">🛡️</div>
                 <span class="brand-name">Protege+</span>
             </a>
-
             <nav class="nav-menu">
                 <a href="{% url 'home' %}" class="nav-link">Início</a>
+                {% if not user.is_authenticated %}
                 <div class="auth-buttons">
-                    <a href="{% url 'login' %}" class="btn-entrar">Entrar</a>
+                    <a href="{% url 'login' %}" class="btn-registar">Entrar</a>
                     <a href="{% url 'registar' %}" class="btn-registar">Registar</a>
                 </div>
+                {% else %}
+                <a href="{% url 'atividades:home2' %}" class="nav-link">Dashboard</a>
+                {% endif %}
             </nav>
         </div>
     </header>
@@ -31,35 +34,41 @@
         <div class="content-grid">
             
             <div class="about-text">
-                <h1 class="serif-title">Quem <br> Somos?</h1>
+                <h1 class="serif-title">Educação e <br> Segurança Digital</h1>
                 <p>
-                    O Protege+ nasceu para ajudar estudantes a navegar no mundo digital com segurança. Focamo-nos em ensinar cibersegurança de forma simples, prática e direta.
+                    O <strong>Protege+</strong> é uma plataforma dedicada a capacitar estudantes e cidadãos a navegarem no mundo digital com confiança. O nosso objetivo é desmistificar a cibersegurança através de simuladores práticos e quizzes interativos.
                 </p>
+                <ul class="info-list">
+                    <li>🛡️ Prevenção contra Phishing</li>
+                    <li>🔑 Gestão segura de credenciais</li>
+                    <li>🧠 Literacia digital avançada</li>
+                </ul>
             </div>
 
             <div class="contact-card">
                 <div class="contact-inner">
-                    <h2>Envia uma mensagem</h2>
-                    
-                    <form action="#" method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label class="form-label">Nome</label>
-                            <input type="text" name="nome" required placeholder="Teu nome" class="form-input">
+                    {% if user.is_authenticated %}
+                        <h2>Envia uma mensagem</h2>
+                        <form action="#" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Assunto</label>
+                                <input type="text" name="assunto" required placeholder="Ex: Dúvida no simulador" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mensagem</label>
+                                <textarea name="mensagem" rows="3" required placeholder="Como podemos ajudar?" class="form-textarea"></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit">Enviar agora</button>
+                        </form>
+                    {% else %}
+                        <div class="locked-content">
+                            <span class="lock-icon">🔒</span>
+                            <h2>Tens alguma dúvida?</h2>
+                            <p>Para nos enviares uma mensagem e obteres suporte personalizado, precisas de ter sessão iniciada.</p>
+                            <a href="{% url 'login' %}" class="btn-login-alt">Iniciar Sessão</a>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" required placeholder="Teu email" class="form-input">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Mensagem</label>
-                            <textarea name="mensagem" rows="3" required placeholder="Como podemos ajudar?" class="form-textarea"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn-submit">Enviar agora</button>
-                    </form>
+                    {% endif %}
                 </div>
             </div>
 

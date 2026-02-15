@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
     path('atividades/', include('atividades.urls')),
+    path('accounts/', include('allauth.urls')),  # URLs do django-allauth
 ]

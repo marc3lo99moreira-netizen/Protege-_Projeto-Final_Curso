@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
 </head>
-<body class="bg-custom-light min-h-screen flex flex-col items-center px-4">
+<body class="bg-custom-light min-h-screen flex flex-col items-center px-4 {% if user.is_authenticated and user.perfil %}{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}{% else %}normal normal{% endif %}" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="w-full p-8 flex justify-between items-center">
         <a href="{% url 'atividades:home2' %}" class="bg-white/40 backdrop-blur-md px-6 py-3 rounded-full font-black italic text-[#254d1a] border border-white/50 shadow-lg">← Sair</a>
@@ -82,7 +82,8 @@
             </button>
         </div>
     </footer>
-    <script src="{% static 'users/js/scripts.js' %}"></script>
+    <script src="{% static 'atividades/js/scripts.js' %}"></script>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     {% if mostrar_popup %}
         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div class="bg-white rounded-[40px] p-8 max-w-sm w-full shadow-2xl text-center border-4 {% if esta_correto %} border-green-500 {% else %} border-red-500 {% endif %}">

@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protege+ | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&family=Instrument+Serif&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'atividades/css/styles.css' %}">
-    
+    <link rel="stylesheet" href="{% static 'atividades/css/home2.css' %}">
+    {% csrf_token %}
 </head>
-<body>
+<body class="{% if user.is_authenticated and user.perfil %}{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}{% else %}normal normal{% endif %}" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="header-main-dashboard">
         <div class="header-pill-container">
@@ -40,7 +40,7 @@
             </div>
 
             <div class="profile-area">
-                <button onclick="PerfilMenu()" type="button" class="btn-avatar-trigger">
+                <button id="btn-avatar-trigger" type="button" class="btn-avatar-trigger">
                     <img src="{% static 'atividades/images/avatar_perfil.png' %}" alt="Perfil">
                 </button>
 
@@ -51,9 +51,9 @@
                     </div>
                     <ul class="dropdown-list">
                         <li><a href="{% url 'perfil' %}" class="dropdown-item">👤 Ver Perfil</a></li>
-                        <li><a href="#" class="dropdown-item">📜 Histórico</a></li>
+                        <li><a href="{% url 'atividades:historico' %}" class="dropdown-item">📜 Histórico</a></li>
                         <li class="divider"></li>
-                        <li><a href="{% url 'home' %}" class="dropdown-item exit">🚪 Sair</a></li>
+                        <li><a href="javascript:void(0);" onclick="fazerLogout('{% url 'logout' %}')" class="dropdown-item exit">🚪 Terminar Sessão</a></li>
                     </ul>
                 </div>
             </div>
@@ -108,6 +108,7 @@
             <span class="help-label">PRECISAS DE AJUDA?</span>
         </div>
     </footer>
-
+    <script src="{% static 'atividades/js/scripts.js' %}"></script>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 </body>
 </html>

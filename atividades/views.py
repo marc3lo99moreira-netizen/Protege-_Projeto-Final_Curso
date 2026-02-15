@@ -1,123 +1,199 @@
+import random
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from .models import QuizPergunta, OpcaoPergunta, ResultadoQuiz, HistoricoQuiz
 
 def home2(request):
     return render(request, 'atividades/home2.html')
 
+@login_required
+@require_http_methods(["POST"])
+def atualizar_filtros_acessibilidade(request):
+    """View para atualizar os filtros de daltonismo e contraste do perfil do usuário"""
+    import json
+    try:
+        data = json.loads(request.body)
+        tipo = data.get('tipo')  # 'daltonismo' ou 'contraste'
+        valor = data.get('valor')
+        
+        perfil = request.user.perfil
+        
+        if tipo == 'daltonismo':
+            perfil.filtro_daltonismo = valor
+        elif tipo == 'contraste':
+            perfil.filtro_contraste = valor
+        
+        perfil.save()
+        return JsonResponse({'status': 'sucesso', 'mensagem': 'Filtros atualizados com sucesso'})
+    except Exception as e:
+        return JsonResponse({'status': 'erro', 'mensagem': str(e)}, status=400)
+
+@login_required
 def quiz(request):
-    perguntas = [
 
-        {
-          "id": 1, "p": "Qual destas senhas é a mais segura?",
-          "o": ["123456", "admin", "P@ssw0rd2024!", "marcelo123"], 
-          "c": "P@ssw0rd2024!",
-          "e": "Para que a tua password seja segura deves misturar letras, numeros e simbolos, e de preferência evitar colocar o teu nome nela."
-        },
+    if 'quiz_indice' not in request.session:
+        lingua = request.user.perfil.lingua
+        perguntas = list(QuizPergunta.objects.filter(lingua=lingua, nivel_dificuldade=request.user.perfil.nivel_quiz))
 
-        {
-         "id": 2, "p": "O que é o Phishing?", 
-         "o": ["Um desporto", "Um ataque por email", "Um antivírus", "Um tipo de ecrã"],
-         "c": "Um ataque por email",
-         "e": "O phishing é uma técnica de crime cibernético onde os atacantes enviam mensagens falsas para se fazer passar por entidades confiáveis e roubar os teus dados ou senhas"
-         },
+        if not perguntas:
+            messages.error(request, "Não há perguntas disponíveis para o seu nível e língua.")
+            return redirect('atividades:home2')
         
-        {
-         "id": 3,
-          "p": "Deves partilhar a tua localização nas redes sociais?",
-          "o": ["Sim, sempre", "Só com estranhos", "Não, por segurança", "Apenas à noite"], 
-          "c": "Não, por segurança",
-          "e": "Partilhar a tua localização em real pode revelar onde moras ou onde passas o teu tempo, e permite que pessoas mal intencionadas saibam exatamnete onde estas."
-        },
-        
-        {
-         "id": 4, "p": "O que significa o cadeado no navegador?", 
-         "o": ["Site lento", "Site perigoso", "Conexão segura", "Site bloqueado"], 
-         "c": "Conexão segura",
-         "e": "O cadeado indica que a tua ligação ao site é encriptada através de um certificado SSL/TLS. Isso garante que dados sensiveis como passwords ou dados bancarios sejam intercetados por terceiros durante o seu envio."
-        },
+        indice = [p.id for p in random.sample(perguntas, min(len(perguntas), 7))]
+        request.session['quiz_indice'] = indice
+        request.session['pergunta_atual'] = 0
+        request.session['pontuacao'] = 0
+        request.session['respostas_utilizador'] = []
 
-        {
-         "id": 5,
-         "p": "De quanto em quanto tempo deves mudar a senha?", 
-         "o": ["Nunca", "Anualmente", "Regularmente", "Todos os dias"], 
-         "c": "Regularmente",
-         "e": "Embora não seja necessario mudar de senha todos os dias, fazê-lo regularmente garante que crendenciais antigas deixem de ser utilidade para os hackers."
-        },
-        
-        {
-         "id": 6, 
-         "p": "A autenticação de dois fatores (2FA) serve para:", 
-         "o": ["Mais velocidade", "Dupla segurança", "Gastar bateria", "Ver vídeos"], 
-         "c": "Dupla segurança",
-         "e": "O 2FA funciona como uma segunda tranca na tua porta.Mesmo que um hacker descubra a tua password ele não vai conseguir entrar na conta sem o segundo códiog que é enviado para o teu telemovel."
-        },       
-       
-        {"id": 7, 
-         "p": "Se receberes um link estranho de um amigo, deves:", 
-         "o": ["Clicar logo", "Ignorar e avisá-lo", "Enviar a outros", "Apagar o PC"], 
-         "c": "Ignorar e avisá-lo",
-         "e": "Muitos virus sao espalhados por mensagens automaticas, caso uma mensagem de um amigo pareça estranha, nao cliques e avisa o de imediato"
-        }
-    ]
+    indice = request.session['quiz_indice']
+    atual = request.session['pergunta_atual']
 
-    passo = request.session.get('quiz_step', 0)
-    pontuacao = request.session.get('pontuacao', 0)
-
-    if passo >= len(perguntas):
-        request.session['quiz_step'] = 0 
-        return render(request, 'atividades/quiz_final.html')
+    if atual >= len(indice):
+        return redirect('atividades:quiz_final')
     
-    pergunta_atual = perguntas[passo]
-
-    if request.method == 'POST':
-        resposta_utilizador = request.POST.get('resposta')
-        esta_correto = (resposta_utilizador == pergunta_atual['c'])
-
-        if esta_correto:
-            request.session['pontuacao'] = request.session.get('pontuacao' , 0) + 1
-    
-        context = {
-            'pergunta': pergunta_atual,
-            'numero': passo + 1,
-            'mostrar_popup': True,
-            'esta_correto': esta_correto,
-            'explicacao': pergunta_atual['e'],
-            'pontuacao': (passo + 1) * 100 / 7
-        }
-        return render(request, 'atividades/quiz.html', context)
-    
-    return render(request, 'atividades/quiz.html', {
-            'pergunta': pergunta_atual,
-            'numero': passo + 1,
-            'mostrar_popup': False,
-            'progresso': (passo +1 ) * 100/7
-            })
-
-def proximo_passo(request):
-    passo = request.session.get('quiz_step', 0)
-    novo_passo = passo + 1
-    request.session['quiz_step'] = novo_passo
-    
-    # Se chegou à 7ª resposta, vai para o FINAL
-    if novo_passo >= 7:
-        return redirect('atividades:quiz_final') # Removido o 'atividades:'
-        
-    return redirect('atividades:quiz') # Removido o 'atividades:'
-
-def quiz_final(request):
-    # 1. Primeiro pegamos o valor da pontuação
-    pontuacao_obtida = request.session.get('pontuacao', 0)
-    
-    # 2. Depois limpamos a sessão para o utilizador poder recomeçar no futuro
-    request.session['quiz_step'] = 0
-    request.session['pontuacao'] = 0
+    pergunta = QuizPergunta.objects.get(id=indice[atual])
+    opcoes = pergunta.opcoes.all().order_by('id') 
 
     context = {
-        'pontuacao': pontuacao_obtida,
-        'Total': 7
+        'pergunta': pergunta,
+        'opcoes': opcoes,
+        'numero': atual + 1,
+        'total': len(indice),
+        'mostrar_popup': False # Começa sempre como False
     }
-    return render(request, 'atividades/quiz_final.html', context)
+
+    if request.method == 'POST':
+        resposta_letra = request.POST.get('resposta')
+        print(f"BOTÃO CLICADO! Resposta: {resposta_letra}") 
+        
+        esta_correto = (resposta_letra == pergunta.resposta_correta)
+
+        # Atualiza o histórico de respostas na sessão
+        respostas = request.session.get('respostas_utilizador', [])
+        respostas.append({
+            'pergunta': pergunta.id,
+            'resposta_dada': resposta_letra,
+            'correta': esta_correto
+        })
+        request.session['respostas_utilizador'] = respostas
+
+        # se acertar aumenta a pontuacao
+        if esta_correto:
+            request.session['pontuacao'] += 1
+
+        #mete o popup a mostrar a explicacao e se ta correto ou errado
+        context.update({
+            'mostrar_popup': True,
+            'esta_correto': esta_correto,
+            'explicacao': pergunta.explicacao
+        })
+
+        #salva a sessao na bd
+        request.session.modified = True
+
+    return render(request, 'atividades/quiz.html', context)
+
+@login_required
+def proximo_passo(request):
+    
+    if 'pergunta_atual' in request.session:
+        request.session['pergunta_atual'] += 1
+        request.session.modified = True  # Garantir que a sessão é salva
+
+        if request.session['pergunta_atual'] >= len(request.session['quiz_indice']):#verific outravez se ja ta na ultima pergunta
+            return redirect('atividades:quiz_final')
+
+    return redirect('atividades:quiz')
+
+
+@login_required
+def quiz_final(request):
+    #vai gravar os dados na bd e limpar a sessao
+    if 'quiz_indice' not in request.session:
+        return redirect('home2')
+    
+    pontos = request.session['pontuacao'] #pontos do quiz
+    total = len(request.session['quiz_indice'])#perguntas do quiz
+    percentagem = (pontos / total) * 100
+
+    resultado = ResultadoQuiz.objects.create(
+        perfil = request.user.perfil,
+        nivel = request.user.perfil.nivel_quiz,
+        pontuacao = pontos,
+        total_perguntas = total,
+        percentagem = percentagem
+    )
+
+    #Grava o historico do quiz
+    for item in request.session['respostas_utilizador']:
+        HistoricoQuiz.objects.create(
+            resultado_quiz = resultado,
+            pergunta_id = item['pergunta'],
+            escolha_utilizador = item['resposta_dada'],
+            foi_correta = item['correta']
+        )
+
+    perfil = request.user.perfil
+    perfil.quizzes_realizados += 1
+
+    perfil.soma_percentagens += percentagem
+
+    subiu  =False
+
+    perfil.pontuacao_total_quiz += pontos
+    if perfil.pontuacao_total_quiz >=30:
+        perfil.nivel_quiz += 1
+        perfil.pontuacao_total_quiz -=30
+        subiu = True
+
+    perfil.save()
+
+    #limpa a sessao
+    del request.session['quiz_indice']
+    del request.session['pergunta_atual']
+    del request.session['pontuacao']
+    del request.session['respostas_utilizador']
+
+    return render(request, 'atividades/quiz_final.html',{
+        'pontos': pontos,
+        'total': total,
+        'resultado': resultado,
+        'xp_atual': perfil.pontuacao_total_quiz,
+        'nivel_atual': perfil.nivel_quiz,
+        'subiu': subiu
+    })
+
+@login_required
+def historico_atividades(request):
+    # O filtro garante que o utilizador só vê os seus próprios dados
+    resultados = ResultadoQuiz.objects.filter(perfil=request.user.perfil).order_by('-data_conclusao')
+    
+    return render(request, 'atividades/historico.html', {
+        'resultados': resultados
+    })
+
+@login_required
+def detalhe_historico(request, resultado_id):
+    # Procura o resultado garantindo que pertence ao utilizador atual
+    resultado = ResultadoQuiz.objects.get(id=resultado_id, perfil=request.user.perfil)
+    
+    respostas = resultado.detalhes.all()
+
+    for item in respostas:
+        # opção da pergunta q a letra e igual com a escolha do utilizador
+        item.texto_escolha = item.pergunta.opcoes.filter(letra=item.escolha_utilizador).first()
+        #opção que é a correta
+        item.texto_correta = item.pergunta.opcoes.filter(letra=item.pergunta.resposta_correta).first()
+    
+    return render(request, 'atividades/detalhe_historico.html', {
+        'resultado': resultado,
+        'respostas': respostas
+    })
+
 
 def simulador(request):    
 

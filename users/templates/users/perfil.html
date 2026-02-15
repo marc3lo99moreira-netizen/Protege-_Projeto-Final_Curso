@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil | Protege+</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/perfil.css' %}">
     
 </head>
-<body class="perf-view-ativa">
+<body class="perf-view-ativa" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="perf-topo-nav">
         <a href="{% url 'atividades:home2' %}" class="perf-btn-retroceder">
@@ -19,36 +19,71 @@
 
     <main class="perf-corpo-central">
         <section class="perf-cartao-id">
+            <a href="#" class="perf-btn-definicoes" title="Editar Perfil">
+                <span class="icon-gear">✒️</span>
+            </a>
             <div class="perf-moldura-avatar">
                 <img src="{% static 'users/images/avatar_perfil.png' %}" alt="Avatar">
             </div>
             
-            <h2 class="perf-nome-utilizador">
-                {{ user.username }}
-                <span class="perf-detalhes-texto">{{ user.email }}</span>
-                <span class="perf-detalhes-texto">{{ user.perfil.instituicao }} • {{ user.perfil.ano_letivo }}º ano</span>
-            </h2>
-        </section>
+            <h2 class="perf-nome-utilizador">{{ user.username }}</h2>
+            <span class="perf-email-pill">{{ user.email }}</span>
+
+            <div class="perf-info-box">
+                <div class="perf-info-linha">
+                    <div class="perf-dado-grupo">
+                        <span class="perf-dado-label">INSTITUIÇÃO</span>
+                        <span class="perf-dado-valor">{{ user.perfil.instituicao }}</span>
+                    </div>
+                    <div class="perf-dado-grupo">
+                        <span class="perf-dado-label">ESCOLARIDADE</span>
+                        <span class="perf-dado-valor">{{ user.perfil.ano_letivo }}º Ano</span>
+                    </div>
+                </div>
+
+                <div class="perf-badges-niveis">
+                    <div class="perf-badge destaque">
+                        <span class="perf-badge-tipo">QUIZ</span>
+                        <span class="perf-badge-num">Nível {{ user.perfil.nivel_quiz }}</span>
+                        
+                        <div class="perf-barra-mini-container">
+                            <div class="perf-barra-mini-fill" style="width: calc(({{ user.perfil.pontuacao_total_quiz }} / 30) * 100%);"></div>
+                        </div>
+                        <span class="perf-xp-texto">{{ user.perfil.pontuacao_total_quiz }}/30 XP</span>
+                    </div>
+
+                    <div class="perf-badge destaque">
+                        <span class="perf-badge-tipo">SIMULADOR</span>
+                        <span class="perf-badge-num">Nível {{ user.perfil.nivel_simulador }}</span>
+                        
+                        <div class="perf-barra-mini-container">
+                            <div class="perf-barra-mini-fill" style="width: calc(({{ user.perfil.pontuacao_total_simulador }} / 30) * 100%);"></div>
+                        </div>
+                        <span class="perf-xp-texto">{{ user.perfil.pontuacao_total_simulador }}/30 XP</span>
+                    </div>
+                </div>
+            </div>
+</section>
 
         <section class="perf-grid-estatisticas">
             <div class="perf-bloco-metrica">
-                <h3>Pontos Totais</h3>
-                <span class="perf-valor-num">1.250</span>
+                <h3>Quizzes Realizados</h3>
+                <span class="perf-valor-num">{{ user.perfil.quizzes_realizados }}</span>
             </div>
 
             <div class="perf-bloco-metrica">
-                <h3>Quizzes</h3>
-                <span class="perf-valor-num">8</span>
+                <h3>Precisão Média Quiz </h3>
+                <span class="perf-valor-num">{{ user.perfil.precisao_media }}%</span>
             </div>
 
             <div class="perf-bloco-metrica">
-                <h3>Simuladores</h3>
-                <span class="perf-valor-num">3</span>
+                <h3>Simuladores Realizados</h3>
+                <span class="perf-valor-num">{{ user.perfil.simuladores_realizados }}</span>
             </div>
 
             <div class="perf-bloco-metrica">
-                <h3>Precisão</h3>
-                <span class="perf-valor-num">92%</span>
+                <h3>Precisão Média Simulador</h3>
+                <span class="perf-valor-num">{{ user.perfil.precisao_media_simulador }}%</span>
             </div>
         </section>
     </main>

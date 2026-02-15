@@ -5,8 +5,11 @@ app_name = 'atividades'
 urlpatterns = [
     path('home2/', views.home2, name='home2'),
     path('quiz/', views.quiz, name='quiz'),
-    path('proximo_passo/', views.proximo_passo, name='proximo_passo'),
+    path('proximo/', views.proximo_passo, name='proximo_passo'),
     path('quiz_final/', views.quiz_final, name='quiz_final'),
     path('simulador/', views.simulador, name='simulador'),
     path('proximo_email/', views.proximo_email, name='proximo_email'),
+    path('historico/', views.historico_atividades, name='historico'),
+    path('detalhe_historico/<int:resultado_id>/', views.detalhe_historico, name='detalhe_historico'),
+    path('api/atualizar-filtros/', views.atualizar_filtros_acessibilidade, name='atualizar_filtros'),
 ]

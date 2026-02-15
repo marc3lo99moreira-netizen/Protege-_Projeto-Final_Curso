@@ -1,14 +1,91 @@
+// --- FUNCTION PARA FAZER LOGOUT (LIMPAR FILTROS) ---
+function fazerLogout(logoutUrl) {
+    // Limpar localStorage
+    localStorage.removeItem('modoDaltonismo');
+    localStorage.removeItem('modoContraste');
+    
+    // Remover classes CSS do body
+    document.body.classList.remove('protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia');
+    document.body.classList.remove('alto-contraste', 'contraste-invertido', 'modo-escuro');
+    
+    console.log('✓ Filtros limpos. Redirecionando...');
+    
+    // Se não passar URL, usar a padrão
+    if (!logoutUrl) {
+        logoutUrl = '/logout/';
+    }
+    
+    // Redirecionar para logout
+    window.location.href = logoutUrl;
+}
+
+// --- FUNÇÕES DE AUXÍLIO (CSRF TOKEN) ---
+function getCookie(name) {
+    // Primeiro tenta obter do input hidden por name
+    let input = document.querySelector(`input[name="${name}"]`);
+    if (input && input.value) {
+        return input.value;
+    }
+    
+    // Tenta variações comuns do nome
+    if (name === 'csrftoken') {
+        input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (input && input.value) {
+            return input.value;
+        }
+    }
+    
+    // Se não encontrar no input, tenta a cookie
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Função para enviar as escolhas para o MySQL (Django)
+function salvarPreferenciaNoBanco(tipo, valor) {
+    const formData = new FormData();
+    formData.append('tipo', tipo);
+    formData.append('valor', valor);
+
+    fetch('/users/salvar-acessibilidade/', { // Esta URL deve estar no teu users/urls.py
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => {
+        if (!response.ok) console.error("Erro ao salvar preferência no banco.");
+    });
+}
+
 // --- FUNÇÕES DE CONTROLO DE MENUS ---
 function toggleDaltonismoMenu() {
     document.getElementById('contraste-menu').classList.add('hidden');
     const menu = document.getElementById('daltonismo-menu');
-    menu.classList.toggle('hidden');
+    if (menu) menu.classList.toggle('hidden');
 }
 
 function toggleContrasteMenu() {
     document.getElementById('daltonismo-menu').classList.add('hidden');
     const menu = document.getElementById('contraste-menu');
-    menu.classList.toggle('hidden');
+    if (menu) menu.classList.toggle('hidden');
+}
+
+function PerfilMenu() {
+    document.getElementById('contraste-menu').classList.add('hidden');
+    document.getElementById('daltonismo-menu').classList.add('hidden');
+    const menu = document.getElementById('perfil-menu');
+    if (menu) menu.classList.toggle('hidden');
 }
 
 // --- FUNÇÕES DE APLICAÇÃO DE FILTROS ---
@@ -17,7 +94,17 @@ function setDaltonismo(tipo) {
     if (tipo !== 'normal') {
         document.body.classList.add(tipo);
     }
-    localStorage.setItem('modoDaltonismo', tipo);
+    
+    const isAuthenticated = document.body.dataset.authenticated === 'true';
+    
+    // Se está autenticado, guardar no servidor/BD
+    // Se não está, guardar no localStorage
+    if (isAuthenticated) {
+        salvarPreferenciaNoBanco('daltonismo', tipo);
+    } else {
+        localStorage.setItem('modoDaltonismo', tipo);
+    }
+    
     document.getElementById('daltonismo-menu').classList.add('hidden');
 }
 
@@ -26,7 +113,17 @@ function setContraste(tipo) {
     if (tipo !== 'normal') {
         document.body.classList.add(tipo);
     }
-    localStorage.setItem('modoContraste', tipo);
+    
+    const isAuthenticated = document.body.dataset.authenticated === 'true';
+    
+    // Se está autenticado, guardar no servidor/BD
+    // Se não está, guardar no localStorage
+    if (isAuthenticated) {
+        salvarPreferenciaNoBanco('contraste', tipo);
+    } else {
+        localStorage.setItem('modoContraste', tipo);
+    }
+    
     document.getElementById('contraste-menu').classList.add('hidden');
 }
 
@@ -34,80 +131,77 @@ function setContraste(tipo) {
 window.addEventListener('click', function(e) {
     const daltMenu = document.getElementById('daltonismo-menu');
     const contMenu = document.getElementById('contraste-menu');
+    const perfMenu = document.getElementById('perfil-menu');
     const isButton = e.target.closest('button');
 
-    if (daltMenu && contMenu && !daltMenu.contains(e.target) && !contMenu.contains(e.target) && !isButton) {
-        daltMenu.classList.add('hidden');
-        contMenu.classList.add('hidden');
+    if (!isButton) {
+        if (daltMenu) daltMenu.classList.add('hidden');
+        if (contMenu) contMenu.classList.add('hidden');
+        if (perfMenu) perfMenu.classList.add('hidden');
     }
 });
 
-// --- FUNÇÃO PARA APLICAR FILTROS IMEDIATAMENTE ---
-function aplicarPreferencias() {
-    const daltSalvo = localStorage.getItem('modoDaltonismo');
-    if (daltSalvo && daltSalvo !== 'normal') {
-        document.body.classList.add(daltSalvo);
-    }
-    
-    const contSalvo = localStorage.getItem('modoContraste');
-    if (contSalvo && contSalvo !== 'normal') {
-        document.body.classList.add(contSalvo);
-    }
-}
-
-// Executa assim que o HTML básico estiver pronto (mais rápido que window.onload)
-document.addEventListener('DOMContentLoaded', aplicarPreferencias);
-
 // --- LÓGICA DE PASSOS DO REGISTO ---
 function goToStep(step) {
-    // Esconder todos os passos
-    const s1 = document.getElementById('step1');
-    const s2 = document.getElementById('step2');
-    const s3 = document.getElementById('step3');
+    const steps = ['step1', 'step2', 'step3'];
+    steps.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add('hidden');
+    });
+    
+    const target = document.getElementById('step' + step);
+    if (target) target.classList.remove('hidden');
 
-    if (s1 && s2 && s3) {
-        s1.classList.add('hidden');
-        s2.classList.add('hidden');
-        s3.classList.add('hidden');
-        document.getElementById('step' + step).classList.remove('hidden');
-    }
-
-    // Atualizar visual da barra de progresso
     const d2 = document.getElementById('dot2');
     const l1 = document.getElementById('line1');
     const d3 = document.getElementById('dot3');
     const l2 = document.getElementById('line2');
 
-    if (d2 && l1 && d3 && l2) {
+    if (d2 && l1) {
         d2.classList.toggle('active', step >= 2);
         l1.classList.toggle('active', step >= 2);
+    }
+    if (d3 && l2) {
         d3.classList.toggle('active', step >= 3);
         l2.classList.toggle('active', step >= 3);
     }
 }
 
+// --- SIMULADOR PHISHING ---
 document.querySelectorAll('.phishing-trigger').forEach(el => {
-            el.addEventListener('click', () => {
-                const info = el.getAttribute('data-info');
-                const box = document.getElementById('info-box');
-                const text = document.getElementById('info-text');
-                
-                text.innerText = info;
-                box.classList.remove('hidden');
-                
-                // Esconde após 5 segundos
-                setTimeout(() => box.classList.add('hidden'), 5000);
-            });
-        });
+    el.addEventListener('click', () => {
+        const info = el.getAttribute('data-info');
+        const box = document.getElementById('info-box');
+        const text = document.getElementById('info-text');
+        
+        if (box && text) {
+            text.innerText = info;
+            box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 5000);
+        }
+    });
+});
 
-
-function PerfilMenu() {
-
-    document.getElementById('contraste-menu').classList.add('hidden');
-    document.getElementById('daltonismo-menu').classList.add('hidden');
-
-    const menu = document.getElementById('perfil-menu');
-    if (menu){
-        menu.classList.toggle('hidden');
+// --- INICIALIZAÇÃO ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Verificar se o utilizador está autenticado
+    const isAuthenticated = document.body.dataset.authenticated === 'true';
+    
+    // Se está autenticado, os filtros já foram injectados pelo Django
+    // Limpar localStorage para não interferer com outro utilizador
+    if (isAuthenticated) {
+        localStorage.removeItem('modoDaltonismo');
+        localStorage.removeItem('modoContraste');
+    } else {
+        // Utilizador não autenticado: aplicar filtros do localStorage se existirem
+        const daltSalvo = localStorage.getItem('modoDaltonismo');
+        if (daltSalvo && daltSalvo !== 'normal') {
+            document.body.classList.add(daltSalvo);
+        }
+        
+        const contSalvo = localStorage.getItem('modoContraste');
+        if (contSalvo && contSalvo !== 'normal') {
+            document.body.classList.add(contSalvo);
+        }
     }
-}
+});

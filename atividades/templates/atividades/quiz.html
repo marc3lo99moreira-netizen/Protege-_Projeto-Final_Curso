@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz | Protege+</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'atividades/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'atividades/css/quiz.css' %}">
 </head>
-<body>
+<body class="{% if user.is_authenticated and user.perfil %}{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}{% else %}normal normal{% endif %}" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="header-quiz">
         <div class="pointer-events-auto">
@@ -44,17 +44,21 @@
         <div class="quiz-card">
             
             <div class="question-box">
-                <h2>{{ pergunta.p }}</h2>
+                <h2>{{ pergunta.pergunta }}</h2>
             </div>
 
             <form method="POST" class="options-grid">
                 {% csrf_token %}
-                {% for opcao in pergunta.o %}
-                <button type="submit" name="resposta" value="{{ opcao }}" class="option-btn">
+                {% for opcao in opcoes %}
+
+                <button type="submit" name="resposta" 
+                value="{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}" 
+                class="option-btn">
+
                     <div class="option-letter">
                         {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}
                     </div>
-                    <span class="option-text">{{ opcao }}</span>
+                    <span class="option-text">{{ opcao.texto }}</span>
                 </button>
                 {% endfor %}
             </form>
@@ -93,7 +97,8 @@
         </div>
     </footer>
 
-    <script src="{% static 'users/js/scripts.js' %}"></script>
+    <script src="{% static 'atividades/js/scripts.js' %}"></script>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
     {% if mostrar_popup %}
     <div class="overlay">

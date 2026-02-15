@@ -102,31 +102,27 @@
         }
 
         /* BOTÕES DE LOGIN/REGISTO */
-        .btn-entrar {
-            border: 2px solid var(--dark-green);
-            color: var(--dark-green);
-            padding: 8px 22px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 900;
-            font-size: 13px;
+/* Estilo unificado para botões de autenticação */
+        /* Forçar que ambos os botões dentro de .auth-buttons sejam idênticos */
+        .auth-buttons a.btn-entrar, 
+        .auth-buttons a.btn-registar {
+            background-color: #1c8814 !important;
+            color: #ffffff !important;
+            padding: 10px 22px !important;
+            border-radius: 25px !important;
+            text-decoration: none !important;
+            font-weight: 900 !important;
+            font-size: 13px !important;
+            display: inline-block !important;
+            border: none !important;
             transition: 0.3s;
         }
 
-        .btn-entrar:hover { background: var(--dark-green); color: white; }
-
-        .btn-registar {
-            background: #1c8814;
-            color: var(--white);
-            padding: 10px 22px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 900;
-            font-size: 13px;
-            transition: 0.3s;
+        /* Efeito de Hover para ambos */
+        .auth-buttons a:hover {
+            background-color: #254d1a !important;
+            transform: translateY(-2px);
         }
-
-        .btn-registar:hover { background: var(--dark-green); }
 
         /* --- HERO SECTION --- */
         .hero {
@@ -916,3 +912,4 @@
         .modo-escuro .perf-cartao-id, 
         .modo-escuro .perf-bloco-metrica { background: #1e1e1e; border-color: #333; }
     
+        
