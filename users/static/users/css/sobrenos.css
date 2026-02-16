@@ -328,3 +328,101 @@
         .btn-login-alt:hover {
             transform: scale(1.05);
         }
+
+        .locked-content {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .lock-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .btn-login-alt {
+            display: inline-block;
+            background: var(--floresta-profunda);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 1rem;
+            font-weight: 900;
+            transition: transform 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-login-alt:hover {
+            transform: scale(1.05);
+        }
+
+        /* 7. MENSAGENS DO DJANGO */
+        .messages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            border: 2px solid #f88;
+            color: #c00;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            border: 2px solid #8f8;
+            color: #080;
+        }
+
+        .alert-info {
+            background-color: #eef;
+            border: 2px solid #88f;
+            color: #008;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 8. PROTEÇÃO: Esconder formulário se não autenticado */
+        body[data-authenticated="false"] .contact-inner form,
+        body[data-authenticated="false"] .form-group,
+        body[data-authenticated="false"] input[name="assunto"],
+        body[data-authenticated="false"] textarea[name="mensagem"],
+        body[data-authenticated="false"] .btn-submit {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* 9. BOTÃO VOLTAR */
+        .btn-voltar {
+            background-color: rgba(28, 136, 20, 0.3) !important;
+            border: 2px solid var(--verde-brilhante) !important;
+            padding: 8px 16px !important;
+            border-radius: 25px !important;
+            font-weight: 700 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .btn-voltar:hover {
+            background-color: var(--verde-brilhante) !important;
+            color: #fff !important;
+        }

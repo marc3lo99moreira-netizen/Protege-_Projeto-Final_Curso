@@ -10,4 +10,5 @@ urlpatterns = [
     path('perfil/', views.perfil, name='perfil'),
     path('logout/', views.logout_view, name='logout'),
     path('salvar_acessibilidade/', views.salvar_acessibilidade, name='salvar_acessibilidade'),
+    path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
 ]

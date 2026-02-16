@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,900&family=Instrument+Serif&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'users/css/sobrenos.css' %}">
 </head>
-<body class="{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}" data-authenticated="{{ user.is_authenticated|lower }}">
+<body class="{% if user.is_authenticated %}{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}{% endif %}" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="header-main">
         <div class="header-pill">
@@ -17,22 +17,31 @@
                 <span class="brand-name">Protege+</span>
             </a>
             <nav class="nav-menu">
-                <a href="{% url 'home' %}" class="nav-link">Início</a>
                 {% if not user.is_authenticated %}
                 <div class="auth-buttons">
                     <a href="{% url 'login' %}" class="btn-registar">Entrar</a>
                     <a href="{% url 'registar' %}" class="btn-registar">Registar</a>
                 </div>
                 {% else %}
-                <a href="{% url 'atividades:home2' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'atividades:home2' %}" class="nav-link btn-voltar">← Voltar</a>
                 {% endif %}
             </nav>
         </div>
     </header>
 
     <main class="main-container">
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                {% if message.tags != 'success' %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
         <div class="content-grid">
-            
             <div class="about-text">
                 <h1 class="serif-title">Educação e <br> Segurança Digital</h1>
                 <p>
@@ -49,7 +58,7 @@
                 <div class="contact-inner">
                     {% if user.is_authenticated %}
                         <h2>Envia uma mensagem</h2>
-                        <form action="#" method="POST">
+                        <form action="{% url 'sobrenos' %}" method="POST" id="mensagem-form">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label class="form-label">Assunto</label>

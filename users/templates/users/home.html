@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'users/css/home.css' %}">
     
 </head>
-<body class="bg-home" data-authenticated="{{ user.is_authenticated|lower }}">
+<body class="bg-home {% if user.is_authenticated %}{{ user.perfil.filtro_daltonismo }} {{ user.perfil.filtro_contraste }}{% endif %}" data-authenticated="{{ user.is_authenticated|lower }}">
 
     <header class="header-main">
         <div class="header-pill">
@@ -34,8 +34,14 @@
                 <a href="{% url 'sobrenos' %}" class="nav-link-text">Sobre Nós</a>
                 
                 <div class="auth-buttons">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'atividades:home2' %}" class="btn-registar">Dashboard</a>
+                    <a href="{% url 'perfil' %}" class="btn-registar">Perfil</a>
+                    <a href="{% url 'logout' %}" class="btn-registar">Sair</a>
+                    {% else %}
                     <a href="{% url 'login' %}" class="btn-registar">ENTRAR</a>
                     <a href="{% url 'registar' %}" class="btn-registar">REGISTAR</a>
+                    {% endif %}
                 </div>
             </nav>
         </div>
@@ -44,9 +50,9 @@
     <main class="hero">
         <div class="hero-container">
             <div class="hero-text">
-                <h1 class="serif-title">APRENDE A <br> PROTEGER-TE.</h1>
-                <p class="hero-subtitle">Testa os teus conhecimentos com os nossos simuladores de phishing e quizzes interativos.</p>
-                <a href="{% url 'login' %}" class="btn-cta">COMEÇAR AGORA</a>
+                <h1 class="serif-title">{% if user.is_authenticated %}BEM-VINDO DE VOLTA!{% else %}APRENDE A <br> PROTEGER-TE.{% endif %}</h1>
+                <p class="hero-subtitle">{% if user.is_authenticated %}Continua a aprender e melhorar as tuas habilidades de cibersegurança.{% else %}Testa os teus conhecimentos com os nossos simuladores de phishing e quizzes interativos.{% endif %}</p>
+                <a href="{% if user.is_authenticated %}{% url 'atividades:home2' %}{% else %}{% url 'login' %}{% endif %}" class="btn-cta">{% if user.is_authenticated %}IR PARA DASHBOARD{% else %}COMEÇAR AGORA{% endif %}</a>
             </div>
 
             <div class="hero-image-box">
